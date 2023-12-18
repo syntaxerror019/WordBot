@@ -1,0 +1,2 @@
+# WordBot
+WordBot Resources
