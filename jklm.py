@@ -1,6 +1,5 @@
 import requests
 
-
 def create_room(token, name, public=False):
     endpoint = "https://jklm.fun/api/startRoom"
     data = {

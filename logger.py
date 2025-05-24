@@ -3,10 +3,8 @@ import logging
 
 logging.addLevelName(25, "CHAT")
 
-
 def chat(self, message, *args, **kwargs):
     self._log(25, message, args, **kwargs)
-
 
 logging.Logger.chat = chat
 

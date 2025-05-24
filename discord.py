@@ -1,4 +1,5 @@
 import requests
+
 class Discord:
     def __init__(self, url):
         self.url = url

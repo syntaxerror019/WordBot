@@ -8,7 +8,6 @@ from timing import Timer
 import re
 import socketio
 
-
 BOT_DISCONNECTED = 0
 BOT_CONNECTED = 1
 BOT_THINKING = 2

@@ -1,7 +1,6 @@
 import random
 import string
 
-
 def generate_token(length=16):
     """
       Generates a random alphanumeric token of a given length for bot.

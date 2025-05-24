@@ -8,9 +8,7 @@ from time import sleep
 wordbot = WordBot()
 handler = commands.CommandHandler(wordbot)
 
-
 # Bot Event Handlers:
-
 
 def on_connect(name, bot_instance):
     log.info(f"{bot_instance.name} connected to server ({name})")

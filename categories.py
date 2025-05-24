@@ -1,7 +1,6 @@
 import os
 from timing import Timer
 
-
 class Categorizer:
     def __init__(self, folder_path):
         self.categories = [f for f in os.listdir(folder_path) if f.endswith(".txt")]
