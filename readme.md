@@ -1,0 +1,1 @@
+# WordBot - rev 2. - 2025
