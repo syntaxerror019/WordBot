@@ -5,8 +5,10 @@ from dictionary import Dictionary
 from categories import Categorizer
 from discord import Discord
 from timing import Timer
+from define import define
 import re
 import socketio
+
 
 BOT_DISCONNECTED = 0
 BOT_CONNECTED = 1
@@ -20,8 +22,6 @@ players_average_response_time = {}
 
 # WordBot Stats
 bot_words_played = 0
-
-chat = Discord("https://discord.com/api/webhooks/1068311419608629248/FdlkrRyAi5g1zByM4bC0ITp-uSo9ELt7jT6uFKXMuSPFef6dZN1T6eHR6uZkbhnDMfxe")
 
 bot_details = {
     "name": None,
@@ -50,6 +50,8 @@ class WordBot:
         self.game = self.return_socket()
 
         self.peers = []
+        
+        self.chat = Discord("https://discord.com/api/webhooks/1068311419608629248/FdlkrRyAi5g1zByM4bC0ITp-uSo9ELt7jT6uFKXMuSPFef6dZN1T6eHR6uZkbhnDMfxe")
 
         self.used_words = set()
         self.invalid_words = set()
@@ -275,6 +277,12 @@ class WordBot:
             (id, False),
             callback=noop
         )
+        
+    def define_word(self, word):
+        timer = Timer()
+        timer.start()
+        definition = define(word)
+        return definition, timer.stop()
 
     def send_chat(self, message, styles={}):
         if not styles.get('font-weight'):
@@ -296,6 +304,13 @@ class WordBot:
         for peer in self.peers:
             if peer['peerId'] == id:
                 return peer['nickname']
+        return None
+    
+    def get_avatar(self, id):
+        for peer in self.peers:
+            if peer['peerId'] == id:
+                if 'picture' in peer:
+                    return peer['picture']
         return None
 
     def get_chatter_profiles(self, data):
@@ -319,7 +334,7 @@ class WordBot:
         self.used_words.clear()
 
     def return_socket(self):
-        return socketio.Client(reconnection=True, reconnection_attempts=10, reconnection_delay=10)  # noqa: E501
+        return socketio.Client(reconnection=True, reconnection_attempts=9900, reconnection_delay=10)  # noqa: E501
         #return socketio.Client(
          #   reconnection=True,
          #   logger=True,

@@ -3,10 +3,13 @@ from logger import log
 import commands
 from args import create_parser
 import jklm
+import threading
+import time
 from time import sleep
 
 wordbot = WordBot()
 handler = commands.CommandHandler(wordbot)
+
 
 # Bot Event Handlers:
 
@@ -16,9 +19,10 @@ def on_connect(name, bot_instance):
 
 def on_disconnect(name, bot_instance):
     log.warning(f"{bot_instance.name} disconnected from server ({name})")
-    import time
     uptime = (time.time() - bot_instance.init_time) / 60
-    print(f"\n\n - - - - THIS SCRIPT LASTED FOR {uptime:.2f} MINUTES - - - -\n\n")
+    log.warning(f"Uptime: {uptime:.2f} minutes")
+    bot_instance.socket.disconnect()
+    bot_instance.game.disconnect()
     reconnect()
 
 
@@ -32,7 +36,7 @@ def on_chatter_added(nickname, peer_id, auth, bot_instance):
 
 def on_chat(nickname, peer_id, auth, message, bot_instance):
     log.chat(f"{nickname} ({peer_id}) [{auth}]: {message}")
-    bot_instance.chat.send_message(message, nickname)
+    bot_instance.chat.send_message(message, nickname, bot_instance.get_avatar(peer_id))
     handler.handle(nickname, peer_id, auth, message)
 
 
@@ -167,14 +171,43 @@ def main():
 
     bind_bot_handlers(wordbot)
     commands.register_command_handlers(handler)
+    
+    def periodic_task():
+        # Rudamentary keep alive.
+        wordbot.socket.emit(
+                "getChatterProfiles",
+                callback=wordbot.get_chatter_profiles
+        )
+        wordbot.game.emit('joinRound')
+        threading.Timer(5.0, periodic_task).start()
 
-    wordbot.wait()
+    periodic_task()
+
+    #wordbot.wait()
 
 
 def reconnect():
     global wordbot
-    wordbot.socket.disconnect()
-    wordbot.game.disconnect()
+    # Force terminate socketio connections if they exist
+    if hasattr(wordbot, "socket") and wordbot.socket is not None:
+        try:
+            wordbot.socket.eio.disconnect(True)
+        except Exception:
+            pass
+        try:
+            wordbot.socket.disconnect()
+        except Exception:
+            pass
+
+    if hasattr(wordbot, "game") and wordbot.game is not None:
+        try:
+            wordbot.game.eio.disconnect(True)
+        except Exception:
+            pass
+        try:
+            wordbot.game.disconnect()
+        except Exception:
+            pass
 
     sleep(5)
 

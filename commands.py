@@ -64,6 +64,7 @@ class CommandHandler:
         else:
             command_list = [f"/{cmd.name}" for cmd in self.commands.values()]
             bot.send_chat("Available commands:\n" + " — ".join(command_list) + "\nType '/help <command>' for more information.")
+            
 
 def register_command_handlers(handler):
     handler.add_command(
@@ -147,6 +148,14 @@ def register_command_handlers(handler):
         action=lambda nickname, peer_id, auth, args, bot: create_room(nickname, peer_id, auth, args, bot),
     )
     handler.add_command(
+        "define",
+        ["d"],
+        "Define a word.",
+        "/define <word>",
+        admin=False,
+        action=lambda nickname, peer_id, auth, args, bot: define_word(nickname, peer_id, auth, args, bot),
+    )
+    handler.add_command(
         "eval",
         ["ev"],
         "Execute code snippet.",
@@ -186,6 +195,17 @@ def evaluate(nickname, peer_id, auth, args, bot):
         exec(" ".join(args))
     except Exception as e:
         bot.send_chat(str(e))
+    
+def define_word(nickname, peer_id, auth, args, bot):
+    if args:
+        word = args[0]
+        definition, dur = bot.define_word(word)
+        if definition is not None:
+            bot.send_chat(f"Definition of '{word}': {definition} (found in {dur:.2f}s)")
+        else:
+            bot.send_chat(f"Definition not found for '{word}'.")
+    else:
+        bot.send_chat("Usage: /define <word>")
 
 def about(nickname, peer_id, auth, args, bot):
     bot.send_chat("\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯\nWordBot rev. 2 (2025)\nCreated by Miles H.\nhttps://www.mileshilliard.com/ & https://wordbot.sntx.dev/\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯\nAll Rights Reserved 2022-2025 Miles Hilliard")
