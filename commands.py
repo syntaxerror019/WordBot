@@ -1,3 +1,5 @@
+import jklm
+
 class Command:
     def __init__(self, name, aliases, desc, usage, admin, action):
         self.name = name
@@ -186,8 +188,13 @@ def create_room(nickname, peer_id, auth, args, bot):
         bot.send_chat("You must be logged in with Discord or Twitch to use this command.")
         return
 
-    url, code = bot.create_room(nickname, peer_id, auth, )
-    bot.send_chat(f"Room created! Join at {url} with code {code}")
+    url, code = jklm.create_room(
+        token=bot.token,
+        name=f"WordBot ⚡ x {nickname}",
+        public=True
+    )
+    
+    bot.send_chat(f"Room created! Join at {url} with code https://jklm.fun/{code.upper()}")
 
 def evaluate(nickname, peer_id, auth, args, bot):
     print(args)

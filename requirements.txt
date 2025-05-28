@@ -1,3 +1,5 @@
 requests
 python-socketio[client]
 nltk
+rich
+python-dotenv
